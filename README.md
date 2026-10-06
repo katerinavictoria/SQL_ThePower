@@ -22,3 +22,14 @@ where "actor_id" between 30 and 40;
 38	TOM	MCKELLEN	2006-02-15 04:34:33.000
 39	GOLDIE	BRODY	2006-02-15 04:34:33.000
 40	JOHNNY	CAGE	2006-02-15 04:34:33.000
+
+4. Obtén las películas cuyo idioma coincide con el idioma original.
+5. Ordena las películas por duración de forma ascendente.
+6. . Encuentra el nombre y apellido de los actores que tengan ‘Allen’ en su
+apellido.
+SELECT *
+FROM "actor"
+WHERE "last_name" = 'Allen';
+Result None 
+<img width="655" height="398" alt="Captura de pantalla 2026-10-06 a las 11 40 12" src="https://github.com/user-attachments/assets/55661b00-f638-4469-ad8c-4bc9ed7200d7" />
+
