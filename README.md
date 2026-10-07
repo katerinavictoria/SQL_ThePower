@@ -7,8 +7,6 @@
 
 2. Nombres de películas con clasificación por edades de 'R'
 Todas las películas tienen la misma release_year 2006 por lo que no se puede ordenar más que como está en orden alfabético.
-<img width="709" height="409" alt="Captura de pantalla 2026-10-07 a las 15 37 53" src="https://github.com/user-attachments/assets/e67d304d-d885-4459-a9e2-7b628258e811" />
-<img width="1009" height="437" alt="Captura de pantalla 2026-10-07 a las 15 34 51" src="https://github.com/user-attachments/assets/0dfe61d7-5acb-446d-8cca-9d9820ecdad6" />
 
 <img width="936" height="591" alt="Captura de pantalla 2026-10-07 a las 15 36 00" src="https://github.com/user-attachments/assets/c80a0ebc-a898-46de-8b99-f97fd0d2cd91" />
 
