@@ -1,3 +1,4 @@
+<img width="936" height="591" alt="Captura de pantalla 2026-10-07 a las 15 36 00" src="https://github.com/user-attachments/assets/c80a0ebc-a898-46de-8b99-f97fd0d2cd91" />
 ###Shakila_films
 1. Crea el esquema de la BBDD - View diagram in public folder Shakila right click
    
