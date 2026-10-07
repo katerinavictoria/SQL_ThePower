@@ -34,13 +34,30 @@ where "actor_id" between 30 and 40;
 39	GOLDIE	BRODY	2006-02-15 04:34:33.000
 40	JOHNNY	CAGE	2006-02-15 04:34:33.000
 
+<img width="1009" height="437" alt="Captura de pantalla 2026-10-07 a las 15 34 51" src="https://github.com/user-attachments/assets/a4886791-aa36-4ec5-a6f1-2ddc1ed54bcd" />
+
+
 4. Obtén las películas cuyo idioma coincide con el idioma original.
 
-6. Ordena las películas por duración de forma ascendente.
-7. . Encuentra el nombre y apellido de los actores que tengan ‘Allen’ en su
+
+   
+
+5. Ordena las películas por duración de forma ascendente.
+select * 
+from film
+order by length; (sin nada es asc sino usamos desc)
+
+<img width="1356" height="875" alt="Captura de pantalla 2026-10-07 a las 16 39 32" src="https://github.com/user-attachments/assets/2a692273-8629-48a4-a097-9e35289fbc8a" />
+
+   
+6. Encuentra el nombre y apellido de los actores que tengan ‘Allen’ en su
 apellido.
 SELECT *
 FROM "actor"
 WHERE "last_name" = 'Allen';
 
+Result NONE/BLANK
 
+
+7. Encuentra la cantidad total de películas en cada clasificación de la tabla
+“film” y muestra la clasificación junto con el recuento.
