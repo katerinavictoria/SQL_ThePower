@@ -1,4 +1,4 @@
-<img width="936" height="591" alt="Captura de pantalla 2026-10-07 a las 15 36 00" src="https://github.com/user-attachments/assets/c80a0ebc-a898-46de-8b99-f97fd0d2cd91" />
+
 ###Shakila_films
 1. Crea el esquema de la BBDD - View diagram in public folder Shakila right click
    
@@ -6,7 +6,11 @@
 
 
 2. Nombres de películas con clasificación por edades de 'R'
-Todas las películas tienen la misma release_year 2006 por lo que no se puede ordenar más que como está en orden alfabético. 
+Todas las películas tienen la misma release_year 2006 por lo que no se puede ordenar más que como está en orden alfabético.
+<img width="709" height="409" alt="Captura de pantalla 2026-10-07 a las 15 37 53" src="https://github.com/user-attachments/assets/e67d304d-d885-4459-a9e2-7b628258e811" />
+<img width="1009" height="437" alt="Captura de pantalla 2026-10-07 a las 15 34 51" src="https://github.com/user-attachments/assets/0dfe61d7-5acb-446d-8cca-9d9820ecdad6" />
+
+<img width="936" height="591" alt="Captura de pantalla 2026-10-07 a las 15 36 00" src="https://github.com/user-attachments/assets/c80a0ebc-a898-46de-8b99-f97fd0d2cd91" />
 
 select * 
 from film
@@ -33,7 +37,6 @@ where "actor_id" between 30 and 40;
 40	JOHNNY	CAGE	2006-02-15 04:34:33.000
 
 4. Obtén las películas cuyo idioma coincide con el idioma original.
-   <img width="1009" height="437" alt="Captura de pantalla 2026-10-07 a las 15 34 51" src="https://github.com/user-attachments/assets/e89b98e8-701b-4c41-b2f0-8e210580d537" />
 
 6. Ordena las películas por duración de forma ascendente.
 7. . Encuentra el nombre y apellido de los actores que tengan ‘Allen’ en su
@@ -41,6 +44,5 @@ apellido.
 SELECT *
 FROM "actor"
 WHERE "last_name" = 'Allen';
-Result None 
-<img width="655" height="398" alt="Captura de pantalla 2026-10-06 a las 11 40 12" src="https://github.com/user-attachments/assets/55661b00-f638-4469-ad8c-4bc9ed7200d7" />
+
 
