@@ -357,4 +357,56 @@ Duración minima 46, max 185
 11. Encuentra lo que costó el antepenúltimo alquiler ordenado por día.<img width="1091" height="464" alt="Captura de pantalla 2026-10-09 a las 15 06 43" src="https://github.com/user-attachments/assets/64b30bc7-4368-48e8-8346-310a40d65556" />
 
 
-12. 
+12. Encuentra el título de las películas en la tabla “film” que no sean ni ‘NC17’ ni ‘G’ en cuanto a su clasificación.
+SELECT title
+FROM film
+WHERE rating NOT IN ('NC-17', 'G');
+
+<img width="1086" height="430" alt="Captura de pantalla 2026-10-09 a las 15 24 41" src="https://github.com/user-attachments/assets/1df8d28b-0705-40ae-bef1-17e2a388bf22" />
+
+
+13.Encuentra el promedio de duración de las películas para cada clasificación de la tabla film y muestra la clasificación junto con el promedio de duración. 
+SELECT 
+    rating, 
+    AVG(length) AS promedio_duracion
+FROM film
+GROUP BY rating;
+
+<img width="1015" height="374" alt="Captura de pantalla 2026-10-09 a las 15 48 41" src="https://github.com/user-attachments/assets/3d6f2052-0f3a-4a58-a6fb-1374293c9a66" />
+
+
+14. Encuentra el título de todas las películas que tengan una duración mayor a 180 minutos.\
+
+select *
+from film 
+where length >180;
+
+<img width="956" height="514" alt="Captura de pantalla 2026-10-09 a las 16 02 41" src="https://github.com/user-attachments/assets/8a137573-fcdb-449c-999a-04c2778eb50d" />
+
+15. ¿Cuánto dinero ha generado en total la empresa?
+
+<img width="796" height="484" alt="Captura de pantalla 2026-10-09 a las 16 31 25" src="https://github.com/user-attachments/assets/69aa9562-fe9a-4cde-9396-ad5ddab76a5e" />
+
+
+16. Muestra los 10 clientes con mayor valor de id.
+
+SELECT *
+FROM customer
+ORDER BY customer_id DESC
+LIMIT 10;
+
+<img width="1269" height="445" alt="Captura de pantalla 2026-10-09 a las 16 33 49" src="https://github.com/user-attachments/assets/5af7f777-3f1e-42ae-aa0d-0414f182a87c" />
+
+
+17. Encuentra el nombre y apellido de los actores que aparecen en la película con título ‘Egg Igby’.
+
+SELECT 
+    a.first_name, 
+    a.last_name
+FROM actor a
+JOIN film_actor fa ON a.actor_id = fa.actor_id
+JOIN film f ON fa.film_id = f.film_id
+WHERE f.title = 'EGG IGBY';
+<img width="1104" height="459" alt="Captura de pantalla 2026-10-09 a las 17 13 10" src="https://github.com/user-attachments/assets/e0200a85-8ad3-43f8-88f7-40c59617a21c" />
+
+18. 
