@@ -409,4 +409,30 @@ JOIN film f ON fa.film_id = f.film_id
 WHERE f.title = 'EGG IGBY';
 <img width="1104" height="459" alt="Captura de pantalla 2026-10-09 a las 17 13 10" src="https://github.com/user-attachments/assets/e0200a85-8ad3-43f8-88f7-40c59617a21c" />
 
-18. 
+18.  Selecciona todos los nombres de las películas únicos.
+
+19.  SELECT DISTINCT title
+FROM film
+ORDER BY title ASC; (Opcional) Total 1000 son todas únicas en la lista. SELECT COUNT(*) FROM film; muestra 1000 como el fin de listado 
+
+<img width="612" height="652" alt="Captura de pantalla 2026-10-10 a las 12 47 53" src="https://github.com/user-attachments/assets/01eef27f-d5f4-4c03-bb7c-ea7c3788314a" />
+
+19. Encuentra el título de las películas que son comedias y tienen una duración mayor a 180 minutos en la tabla “film”.
+
+<img width="540" height="457" alt="Captura de pantalla 2026-10-10 a las 12 59 53" src="https://github.com/user-attachments/assets/ca644959-e0eb-4014-862f-4051c26e2bc2" />
+
+20.Encuentra las categorías de películas que tienen un promedio de duración superior a 110 minutos y muestra el nombre de la categoría junto con el promedio de duración.
+   SELECT 
+    c.name AS categoria,
+    AVG(f.length) AS promedio_duracion
+FROM category c
+JOIN film_category fc ON c.category_id = fc.category_id
+JOIN film f ON fc.film_id = f.film_id
+GROUP BY c.name
+HAVING AVG(f.length) > 110;
+
+ <img width="628" height="565" alt="Captura de pantalla 2026-10-10 a las 13 58 17" src="https://github.com/user-attachments/assets/0e46c369-271c-424e-bf65-53165840f541" />
+
+
+21. ¿Cuál es la media de duración del alquiler de las películas?
+
