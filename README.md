@@ -543,13 +543,276 @@ ORDER BY mes ASC;
     
 26. Encuentra el promedio, la desviación estándar y varianza del total pagado.
 
+SELECT 
+    AVG(amount) AS promedio_pagado,
+    STDDEV(amount) AS desviacion_estandar,
+    VARIANCE(amount) AS varianza
+FROM payment;
+
+<img width="912" height="658" alt="Captura de pantalla 2026-10-10 a las 16 14 50" src="https://github.com/user-attachments/assets/b1836fdf-7c4f-4475-be7e-ee7748424ba0" />
     
+¿Qué representa cada función?
+AVG(amount): Calcula la media aritmética del monto total pagado por transacción.
+
+STDDEV(amount): Mide qué tan dispersos están los pagos respecto al promedio (desviación estándar muestral).
+
+VARIANCE(amount): Mide la variabilidad en unidades cuadradas (el cuadrado de la desviación estándar).
+
+27.  ¿Qué películas se alquilan por encima del precio medio?
+
+SELECT 
+    title, 
+    rental_rate
+FROM film
+WHERE rental_rate > (
+    SELECT AVG(rental_rate) 
+    FROM film
+)
+ORDER BY rental_rate DESC, title ASC;
+
+<img width="1143" height="501" alt="Captura de pantalla 2026-10-10 a las 16 18 27" src="https://github.com/user-attachments/assets/9ce7a8d0-c381-4574-bada-74ccfc1314e6" />
+
+Subconsulta (SELECT AVG(rental_rate) FROM film): Calcula primero la tarifa de alquiler promedio de toda la tabla film (en la base de datos Sakila/Pagila suele ser aproximadamente $2.98).
+
+Filtro principal: Compara cada película y selecciona solo aquellas donde rental_rate sea mayor a ese promedio (por ejemplo, las de $4.99).
+
+ORDER BY: Ordena los resultados de mayor a menor precio y luego alfabéticamente por título.
+
+28.  Muestra el id de los actores que hayan participado en más de 40 películas.
+
+Agrupo por actor_id en la tabla film_actor, contar el número de películas (COUNT(film_id)) y filtrar el grupo utilizando la cláusula HAVING
+
+<img width="535" height="466" alt="Captura de pantalla 2026-10-10 a las 16 22 17" src="https://github.com/user-attachments/assets/adea3d61-f97b-4f40-835f-a22391dac61b" />
+
+SELECT 
+    actor_id, 
+    COUNT(film_id) AS total_peliculas
+FROM film_actor
+GROUP BY actor_id
+HAVING COUNT(film_id) > 40
+ORDER BY total_peliculas DESC;
+
+Si quiero saber el nombre también 
+
+SELECT 
+    a.actor_id,
+    a.first_name,
+    a.last_name,
+    COUNT(fa.film_id) AS total_peliculas
+FROM actor a
+JOIN film_actor fa ON a.actor_id = fa.actor_id
+GROUP BY a.actor_id, a.first_name, a.last_name
+HAVING COUNT(fa.film_id) > 40
+ORDER BY total_peliculas DESC;
+
+**107	GINA	DEGENERES	42
+102	WALTER	TORN	41
+
+29. Obtener todas las películas y, si están disponibles en el inventario, mostrar la cantidad disponible.
+
+SELECT 
+    f.film_id,
+    f.title,
+    COUNT(i.inventory_id) AS cantidad_disponible
+FROM film f
+LEFT JOIN inventory i ON f.film_id = i.film_id
+GROUP BY f.film_id, f.title
+ORDER BY cantidad_disponible DESC, f.title ASC;
+
+<img width="654" height="730" alt="Captura de pantalla 2026-10-10 a las 16 27 20" src="https://github.com/user-attachments/assets/4b13bb09-2bcd-4606-9e27-9483e56b17d2" />
+
+LEFT JOIN inventory: Garantiza que se muestren todas las películas de la tabla film, incluso si no tienen ningún registro o copia asociada en la tabla inventory.
+
+COUNT(i.inventory_id): Cuenta únicamente las copias presentes en el inventario. Para las películas sin inventario, devolverá 0.
+
+GROUP BY f.film_id, f.title: Agrupa el conteo por cada película individual.
+
+
+Considerando las que están alquiladas fuera de tienda. Inventario físico vs. Disponible en tienda
+
+<img width="892" height="731" alt="Captura de pantalla 2026-10-10 a las 16 29 12" src="https://github.com/user-attachments/assets/56ffa583-214d-4948-a839-1c8698dce260" />
+
+
+SELECT 
+    f.film_id,
+    f.title,
+    COUNT(i.inventory_id) AS total_en_inventario,
+    COUNT(i.inventory_id) - COUNT(r.rental_id) AS copias_disponibles_ahora
+FROM film f
+LEFT JOIN inventory i ON f.film_id = i.film_id
+LEFT JOIN rental r ON i.inventory_id = r.inventory_id AND r.return_date IS NULL
+GROUP BY f.film_id, f.title
+ORDER BY copias_disponibles_ahora DESC, f.title ASC;
+
+
+30. Obtener los actores y el número de películas en las que ha actuado. Uno con Join o left join tabla actor y la tabla intermedia film_actor, agrupar por el ID del actor y aplicar la función COUNT()
+
+SELECT 
+    a.actor_id,
+    a.first_name || ' ' || a.last_name AS nombre_completo,
+    COUNT(fa.film_id) AS total_peliculas
+FROM actor a
+JOIN film_actor fa ON a.actor_id = fa.actor_id
+GROUP BY a.actor_id, a.first_name, a.last_name
+ORDER BY total_peliculas DESC;
+
+<img width="755" height="684" alt="Captura de pantalla 2026-10-10 a las 16 33 37" src="https://github.com/user-attachments/assets/45cc037c-b097-4a9f-a142-106cb6aa687e" />
 
 
 
-28.  ¿Qué películas se alquilan por encima del precio medio?
-28. Muestra el id de los actores que hayan participado en más de 40
-películas.
-29. Obtener todas las películas y, si están disponibles en el inventario,
-mostrar la cantidad disponible.
-30. Obtener los actores y el número de películas 
+31. Obtener todas las películas y mostrar los actores que han actuado en ellas, incluso si algunas películas no tienen actores asociados.
+
+Uso LEFT JOIN: Garantiza que se muestren todas las filas de la tabla de la izquierda (film), independientemente de si existen coincidencias en film_actor o actor.
+
+COALESCE(): Si una película no tiene actores, reemplaza el valor nulo (NULL) resultante por el texto 'Sin actores asignados'.
+
+SELECT 
+    f.film_id,
+    f.title,
+    a.actor_id,
+    a.first_name,
+    a.last_name
+FROM film f
+LEFT JOIN film_actor fa ON f.film_id = fa.film_id
+LEFT JOIN actor a ON fa.actor_id = a.actor_id
+ORDER BY f.title ASC, a.last_name ASC;
+
+<img width="1053" height="652" alt="Captura de pantalla 2026-10-10 a las 16 38 43" src="https://github.com/user-attachments/assets/c8e19ea5-ced5-4d20-ae3b-e8b257e0f40b" />
+
+
+32. Obtener todos los actores y mostrar las películas en las que han actuado, incluso si algunos actores no han actuado en ninguna película.
+
+ SELECT 
+    f.film_id,
+    f.title,
+    a.actor_id,
+    a.first_name,
+    a.last_name
+FROM film f
+LEFT JOIN film_actor fa ON f.film_id = fa.film_id
+LEFT JOIN actor a ON fa.actor_id = a.actor_id
+ORDER BY f.title ASC, a.last_name ASC;
+
+LEFT JOIN: Garantiza que se traigan todos los registros de la tabla de la izquierda actor aunque no haya coincidencias en film_actor ni en film.
+
+<img width="796" height="649" alt="Captura de pantalla 2026-10-10 a las 16 59 36" src="https://github.com/user-attachments/assets/d7021fc6-c166-4a0a-bc74-0b3c10b7b165" />
+
+33. Obtener todas las películas que tenemos y todos los registros de  alquiler.
+film: Contiene la información principal de la película (title, film_id)
+inventory: Es la tabla intermedia que mapea las copias físicas de las películas (inventory_id)
+rental: Guarda cada transacción de alquiler asociada a un inventory_id específico.
+
+SELECT 
+    f.film_id,
+    f.title,
+    r.rental_id,
+    r.rental_date,
+    r.return_date,
+    r.customer_id
+FROM film f
+LEFT JOIN inventory i ON f.film_id = i.film_id
+LEFT JOIN rental r ON i.inventory_id = r.inventory_id
+ORDER BY f.title ASC, r.rental_date DESC;
+
+<img width="882" height="613" alt="Captura de pantalla 2026-10-10 a las 17 07 21" src="https://github.com/user-attachments/assets/1e9b78ec-17d5-4f02-afd6-9aeff2b0bddc" />
+
+
+
+34. Encuentra los 5 clientes que más dinero se hayan gastado con nosotros.
+
+Sumo la columna amount de la tabla payment, agrupar por cada cliente (customer_id) y relacionarlo con la tabla customer para obtener su nombre y apellido. Finalmente, ordenas de forma descendente y limitas el resultado a 5 con LIMIT 5
+Se puede incluso hacer un redondedo de Sum con ROUND(SUM(p.amount)::numeric, 2) AS total_gastado
+
+<img width="736" height="665" alt="Captura de pantalla 2026-10-10 a las 17 10 07" src="https://github.com/user-attachments/assets/07431a6f-b0c8-4f4a-bc49-840165e1e468" />
+
+SELECT 
+    c.customer_id,
+    c.first_name || ' ' || c.last_name AS cliente,
+    SUM(p.amount) AS total_gastado
+FROM customer c
+JOIN payment p ON c.customer_id = p.customer_id
+GROUP BY c.customer_id, c.first_name, c.last_name
+ORDER BY total_gastado DESC
+LIMIT 5;
+
+    
+35. Selecciona todos los actores cuyo primer nombre es 'Johnny'. Como los nombres de película y actor están en mayúsculas debo escribir exactamente como en las tablas sino opción es usar ILIKE * WHERE first_name ILIKE 'johnny';
+    SELECT 
+    actor_id,
+    first_name,
+    last_name,
+    last_update
+FROM actor
+WHERE first_name = 'JOHNNY';
+
+<img width="708" height="577" alt="Captura de pantalla 2026-10-10 a las 17 12 41" src="https://github.com/user-attachments/assets/0da9c845-2cf3-4447-a72c-bc8f0e3822ea" />
+
+
+36. Renombra la columna “first_name” como Nombre y “last_name” como Apellido.
+
+SELECT 
+    actor_id,
+    first_name AS "Nombre",
+    last_name AS "Apellido",
+    last_update
+FROM actor;
+
+<img width="674" height="696" alt="Captura de pantalla 2026-10-10 a las 17 15 00" src="https://github.com/user-attachments/assets/8db7022a-0d06-42bf-b158-e8145c1de33c" />
+
+37. Encuentra el ID del actor más bajo y más alto en la tabla actor.
+        
+38. Cuenta cuántos actores hay en la tabla “actor”.
+39. Selecciona todos los actores y ordénalos por apellido en orden
+ascendente.
+40. Selecciona las primeras 5 películas de la tabla “film”.
+41. Agrupa los actores por su nombre y cuenta cuántos actores tienen el
+mismo nombre. ¿Cuál es el nombre más repetido?
+42. Encuentra todos los alquileres y los nombres de los clientes que los
+realizaron.
+43. Muestra todos los clientes y sus alquileres si existen, incluyendo
+aquellos que no tienen alquileres.
+44. Realiza un CROSS JOIN entre las tablas film y category. ¿Aporta valor
+esta consulta? ¿Por qué? Deja después de la consulta la contestación.
+45. Encuentra los actores que han participado en películas de la categoría
+'Action'.
+46. Encuentra todos los actores que no han participado en películas.
+47. Selecciona el nombre de los actores y la cantidad de películas en las
+que han participado.
+48. Crea una vista llamada “actor_num_peliculas” que muestre los nombres
+de los actores y el número de películas en las que han participado.
+49. Calcula el número total de alquileres realizados por cada cliente.
+50. Calcula la duración total de las películas en la categoría 'Action'.
+51. Crea una tabla temporal llamada “cliente_rentas_temporal” para
+almacenar el total de alquileres por cliente.
+52. Crea una tabla temporal llamada “peliculas_alquiladas” que almacene las
+películas que han sido alquiladas al menos 10 veces.
+53. Encuentra el título de las películas que han sido alquiladas por el cliente
+con el nombre ‘Tammy Sanders’ y que aún no se han devuelto. Ordena
+los resultados alfabéticamente por título de película.
+54. Encuentra los nombres de los actores que han actuado en al menos una
+película que pertenece a la categoría ‘Sci-Fi’. Ordena los resultados
+alfabéticamente por apellido.
+DataProject: LógicaConsultasSQL 4
+55. Encuentra el nombre y apellido de los actores que han actuado en
+películas que se alquilaron después de que la película ‘Spartacus
+Cheaper’ se alquilara por primera vez. Ordena los resultados
+alfabéticamente por apellido.
+56. Encuentra el nombre y apellido de los actores que no han actuado en
+ninguna película de la categoría ‘Music’.
+57. Encuentra el título de todas las películas que fueron alquiladas por más
+de 8 días.
+58. Encuentra el título de todas las películas que son de la misma categoría
+que ‘Animation’.
+59. Encuentra los nombres de las películas que tienen la misma duración
+que la película con el título ‘Dancing Fever’. Ordena los resultados
+alfabéticamente por título de película.
+60. Encuentra los nombres de los clientes que han alquilado al menos 7
+películas distintas. Ordena los resultados alfabéticamente por apellido.
+61. Encuentra la cantidad total de películas alquiladas por categoría y
+muestra el nombre de la categoría junto con el recuento de alquileres.
+62. Encuentra el número de películas por categoría estrenadas en 2006.
+63. Obtén todas las combinaciones posibles de trabajadores con las tiendas
+que tenemos.
+64. Encuentra la cantidad total de películas alquiladas por cada cliente y
+muestra el ID del cliente, su nombre y apellido junto con la cantidad de
+películas alquiladas.
