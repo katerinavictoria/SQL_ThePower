@@ -436,3 +436,120 @@ HAVING AVG(f.length) > 110;
 
 21. ¿Cuál es la media de duración del alquiler de las películas?
 
+SELECT 
+    AVG(return_date - rental_date) AS media_duracion_alquiler
+FROM rental;
+<img width="942" height="346" alt="Captura de pantalla 2026-10-10 a las 14 01 38" src="https://github.com/user-attachments/assets/cc28a629-58e2-4dfb-ae75-4572933f88b2" />
+
+22. Crea una columna con el nombre y apellidos de todos los actores y actrices.
+SELECT 
+    CONCAT(first_name, ' ', last_name) AS nombre_completo
+FROM actor;    
+<img width="1002" height="641" alt="Captura de pantalla 2026-10-10 a las 14 18 41" src="https://github.com/user-attachments/assets/b55680f1-503c-4a93-bd0e-0fa9ae3db7c4" />
+    
+23. Números de alquiler por día, ordenados por cantidad de alquiler de forma descendente.
+SELECT 
+    DATE(rental_date) AS fecha,
+    COUNT(*) AS total_alquileres
+FROM rental
+GROUP BY DATE(rental_date)
+ORDER BY total_alquileres DESC;
+
+Día de la semana 
+
+SELECT 
+    DATE(rental_date) AS fecha,
+    TO_CHAR(rental_date, 'Day') AS dia_semana,
+    COUNT(*) AS total_alquileres
+FROM rental
+GROUP BY DATE(rental_date), TO_CHAR(rental_date, 'Day')
+ORDER BY total_alquileres DESC;
+
+2005-07-31	679
+2005-08-01	671
+2005-08-21	659
+2005-07-27	649
+2005-08-02	643
+2005-07-29	641
+2005-07-30	634
+2005-08-19	628
+2005-08-22	626
+2005-08-20	624
+2005-08-18	621
+2005-07-28	620
+2005-08-23	598
+2005-08-17	593
+2005-07-09	513
+2005-07-08	512
+2005-07-06	504
+2005-07-12	495
+2005-07-10	480
+2005-07-07	461
+2005-07-11	461
+2005-06-19	348
+2005-06-15	348
+2005-06-18	344
+2005-06-20	331
+2005-06-17	325
+2005-06-16	324
+2005-06-21	275
+2005-05-28	196
+2006-02-14	182
+2005-05-26	174
+2005-05-27	166
+2005-05-31	163
+2005-05-30	158
+2005-05-29	154
+2005-05-25	137
+2005-07-26	33
+2005-07-05	27
+2005-08-16	23
+2005-06-14	16
+2005-05-24	8
+
+
+
+
+<img width="640" height="624" alt="Captura de pantalla 2026-10-10 a las 14 24 29" src="https://github.com/user-attachments/assets/ca25ae62-83f3-4441-a852-132f6036c804" />
+
+    
+24.Encuentra las películas con una duración superior al promedio.
+
+SELECT 
+    title, 
+    length
+FROM film
+WHERE length > (
+    SELECT AVG(length) 
+    FROM film
+)
+ORDER BY length DESC;
+   
+  <img width="659" height="723" alt="Captura de pantalla 2026-10-10 a las 14 27 54" src="https://github.com/user-attachments/assets/e01fab0d-3671-4b42-acc6-325539b1a85a" />
+
+    
+    
+25. Averigua el número de alquileres registrados por mes.
+
+SELECT 
+    TO_CHAR(rental_date, 'YYYY-MM') AS mes,
+    COUNT(*) AS total_alquileres
+FROM rental
+GROUP BY TO_CHAR(rental_date, 'YYYY-MM')
+ORDER BY mes ASC;
+
+<img width="1143" height="795" alt="Captura de pantalla 2026-10-10 a las 16 05 50" src="https://github.com/user-attachments/assets/f491a1b8-0582-43ba-b45b-13667e1df421" />
+
+    
+26. Encuentra el promedio, la desviación estándar y varianza del total pagado.
+
+    
+
+
+
+28.  ¿Qué películas se alquilan por encima del precio medio?
+28. Muestra el id de los actores que hayan participado en más de 40
+películas.
+29. Obtener todas las películas y, si están disponibles en el inventario,
+mostrar la cantidad disponible.
+30. Obtener los actores y el número de películas 
