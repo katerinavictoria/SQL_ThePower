@@ -1043,28 +1043,102 @@ ORDER BY f.title ASC;
 
 56. Encuentra los nombres de los actores que han actuado en al menos una película que pertenece a la categoría ‘Sci-Fi’. Ordena los resultados alfabéticamente por apellido.
 
+Tengo que vincular las tablas actor, film_actor, film_category y category. Se utiliza DISTINCT para evitar duplicados en caso de que un actor haya participado en varias películas de ciencia ficción.
+
+<img width="558" height="777" alt="Captura de pantalla 2026-10-11 a las 18 01 43" src="https://github.com/user-attachments/assets/4e93d656-3f08-46c0-942e-8bd4b5b3b18e" />
 
 
-
+SELECT DISTINCT
+    a.actor_id,
+    a.first_name,
+    a.last_name
+FROM actor a
+JOIN film_actor fa ON a.actor_id = fa.actor_id
+JOIN film_category fc ON fa.film_id = fc.film_id
+JOIN category c ON fc.category_id = c.category_id
+WHERE c.name = 'Sci-Fi'
+ORDER BY a.last_name ASC, a.first_name ASC;
 
 57. Encuentra el nombre y apellido de los actores que han actuado en películas que se alquilaron después de que la película ‘Spartacus Cheaper’ se alquilara por primera vez. Ordena los resultados alfabéticamente por apellido.
 
+Para obtener los actores que han participado en películas alquiladas después de la primera fecha de alquiler de la película 'Spartacus Cheaper', se utiliza una subconsulta escalar para calcular dicha fecha mínima y luego se vinculan las tablas correspondientes (actor, film_actor, inventory, rental). Subconsulta (SELECT MIN(r_sub.rental_date) ...): Busca la fecha exacta y hora del primer alquiler registrado para la película 'Spartacus Cheaper'.
 
-63. Encuentra el nombre y apellido de los actores que no han actuado en ninguna película de la categoría ‘Music’.
+Agregamos filtro WHERE r.rental_date > (...): Selecciona únicamente las transacciones de alquiler de la base de datos que ocurrieron estrictamente después de esa primera fecha.
 
-64. Encuentra el título de todas las películas que fueron alquiladas por más de 8 días.
+DISTINCT: Garantiza que cada actor aparezca una sola vez en el resultado, sin importar cuántas películas o alquileres cumplan la condición. Por último ordenamos primero alfabéticamente  apellido luego nombre ORDER BY a.last_name ASC, a.first_name ASC:
 
-65. Encuentra el título de todas las películas que son de la misma categoría que ‘Animation’.
+SELECT DISTINCT
+    a.actor_id,
+    a.first_name,
+    a.last_name
+FROM actor a
+JOIN film_actor fa ON a.actor_id = fa.actor_id
+JOIN inventory i ON fa.film_id = i.film_id
+JOIN rental r ON i.inventory_id = r.inventory_id
+WHERE r.rental_date > (
+    SELECT MIN(r_sub.rental_date)
+    FROM film f_sub
+    JOIN inventory i_sub ON f_sub.film_id = i_sub.film_id
+    JOIN rental r_sub ON i_sub.inventory_id = r_sub.inventory_id
+    WHERE UPPER(f_sub.title) = 'SPARTACUS CHEAPER'
+)
+ORDER BY a.last_name ASC, a.first_name ASC;
 
-66. Encuentra los nombres de las películas que tienen la misma duración que la película con el título ‘Dancing Fever’. Ordena los resultados alfabéticamente por título de película.
+<img width="828" height="731" alt="Captura de pantalla 2026-10-11 a las 18 07 31" src="https://github.com/user-attachments/assets/1f9b556b-e479-4f2d-b1df-47d34d81b60c" />
 
-67. Encuentra los nombres de los clientes que han alquilado al menos 7 películas distintas. Ordena los resultados alfabéticamente por apellido.
 
-68. Encuentra la cantidad total de películas alquiladas por categoría y
-muestra el nombre de la categoría junto con el recuento de alquileres.
-69. Encuentra el número de películas por categoría estrenadas en 2006.
-70. Obtén todas las combinaciones posibles de trabajadores con las tiendas
-que tenemos.
-71. Encuentra la cantidad total de películas alquiladas por cada cliente y
-muestra el ID del cliente, su nombre y apellido junto con la cantidad de
-películas alquiladas.
+
+58. Encuentra el nombre y apellido de los actores que no han actuado en ninguna película de la categoría ‘Music’. Podemos usar NOT EXISTS o NOT IN
+
+SELECT 
+    a.actor_id,
+    a.first_name,
+    a.last_name
+FROM actor a
+WHERE a.actor_id NOT IN (
+    SELECT DISTINCT fa.actor_id
+    FROM film_actor fa
+    JOIN film_category fc ON fa.film_id = fc.film_id
+    JOIN category c ON fc.category_id = c.category_id
+    WHERE c.name = 'Music'
+)
+ORDER BY a.last_name ASC, a.first_name ASC;
+
+
+<img width="629" height="759" alt="Captura de pantalla 2026-10-11 a las 18 08 59" src="https://github.com/user-attachments/assets/aa556fc8-ac41-47de-80dc-352f3ccee1c9" />
+
+
+59. Encuentra el título de todas las películas que fueron alquiladas por más de 8 días.
+
+Desde la tabla film unimos inventory y rental por film_id e inventory_id, donde el return date no sea Null ya que antes vimos que hay muchas películas que no sabemos si se han devuelto con NUll category. Y para resultado desde 8 días de alquiler usamos Having MAX INTERVAL 8 Días de la resta de return_date - rental_date
+
+SELECT 
+    f.film_id,
+    f.title AS titulo_pelicula,
+    MAX(r.return_date - r.rental_date) AS duracion_maxima_alquiler
+FROM film f
+JOIN inventory i ON f.film_id = i.film_id
+JOIN rental r ON i.inventory_id = r.inventory_id
+WHERE r.return_date IS NOT NULL
+GROUP BY f.film_id, f.title
+HAVING MAX(r.return_date - r.rental_date) > INTERVAL '8 days'
+ORDER BY duracion_maxima_alquiler DESC, f.title ASC;
+
+
+<img width="726" height="775" alt="Captura de pantalla 2026-10-11 a las 18 12 20" src="https://github.com/user-attachments/assets/02de9dd7-089f-4142-8b6f-508ad1d06862" />
+
+
+61. Encuentra el título de todas las películas que son de la misma categoría que ‘Animation’.
+
+62. Encuentra los nombres de las películas que tienen la misma duración que la película con el título ‘Dancing Fever’. Ordena los resultados alfabéticamente por título de película.
+
+63. Encuentra los nombres de los clientes que han alquilado al menos 7 películas distintas. Ordena los resultados alfabéticamente por apellido.
+
+64. Encuentra la cantidad total de películas alquiladas por categoría y muestra el nombre de la categoría junto con el recuento de alquileres.
+
+
+65. Encuentra el número de películas por categoría estrenadas en 2006.
+
+66. Obtén todas las combinaciones posibles de trabajadores con las tiendas que tenemos.
+
+67. Encuentra la cantidad total de películas alquiladas por cada cliente y muestra el ID del cliente, su nombre y apellido junto con la cantidad de películas alquiladas.
