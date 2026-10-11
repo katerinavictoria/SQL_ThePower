@@ -759,60 +759,146 @@ FROM actor;
 
 <img width="674" height="696" alt="Captura de pantalla 2026-10-10 a las 17 15 00" src="https://github.com/user-attachments/assets/8db7022a-0d06-42bf-b158-e8145c1de33c" />
 
-37. Encuentra el ID del actor más bajo y más alto en la tabla actor.
+37. Encuentra el ID del actor más bajo y más alto en la tabla actor. Función de agregación con minimo y maximo.
+
+Pero para ver el nombre de esos actores y su id conviene hacer una unión y renombrar creando una nueva columna con los tipos mencionados. 
+
+(
+    SELECT 
+        actor_id, 
+        first_name, 
+        last_name, 
+        'MÁS BAJO' AS tipo
+    FROM actor
+    ORDER BY actor_id ASC
+    LIMIT 1
+)
+UNION ALL
+(
+    SELECT 
+        actor_id, 
+        first_name, 
+        last_name, 
+        'MÁS ALTO' AS tipo
+    FROM actor
+    ORDER BY actor_id DESC
+    LIMIT 1
+);
+
+<img width="1143" height="725" alt="Captura de pantalla 2026-10-11 a las 15 20 00" src="https://github.com/user-attachments/assets/d2e1f6d3-711a-49ff-9cbe-2dbcaf810048" />
+
+
         
 38. Cuenta cuántos actores hay en la tabla “actor”.
-39. Selecciona todos los actores y ordénalos por apellido en orden
-ascendente.
-40. Selecciona las primeras 5 películas de la tabla “film”.
-41. Agrupa los actores por su nombre y cuenta cuántos actores tienen el
-mismo nombre. ¿Cuál es el nombre más repetido?
-42. Encuentra todos los alquileres y los nombres de los clientes que los
-realizaron.
-43. Muestra todos los clientes y sus alquileres si existen, incluyendo
-aquellos que no tienen alquileres.
-44. Realiza un CROSS JOIN entre las tablas film y category. ¿Aporta valor
+
+<img width="517" height="216" alt="Captura de pantalla 2026-10-11 a las 15 21 10" src="https://github.com/user-attachments/assets/066b0f99-df8e-48c7-8408-af26333810ae" />
+SELECT COUNT(*) FROM actor;
+
+39. Selecciona todos los actores y ordénalos por apellido en orden ascendente.
+
+SELECT 
+    actor_id,
+    first_name,
+    last_name
+FROM actor
+ORDER BY last_name ASC;
+
+<img width="616" height="520" alt="Captura de pantalla 2026-10-11 a las 15 25 07" src="https://github.com/user-attachments/assets/367d0e21-049c-42d7-bf5f-5868389a0c36" />
+
+40. Selecciona las primeras 5 películas de la tabla “film”. Selecciono las columnas que necesito o quiero ver ejemplo título, id, descripción, release date y rental, agrego orden y limito a las 5 mencionadas.
+41. SELECT 
+    film_id,
+    title,
+    description,
+    release_year,
+    rental_rate
+FROM film
+ORDER BY film_id ASC
+LIMIT 5;
+
+<img width="1169" height="697" alt="Captura de pantalla 2026-10-11 a las 15 44 00" src="https://github.com/user-attachments/assets/c0d073a3-fee9-41f3-ac7d-728813eeb259" />
+
+
+
+41. Agrupa los actores por su nombre y cuenta cuántos actores tienen el mismo nombre. ¿Cuál es el nombre más repetido? Agrupo por nombre de mayor a menor es decir ascendente y pongo en orden para ver los números más repetidos. Coinciden en 4 veces 
+Los nombres más repetidos son Julia, Kenneth y Penelope.
+
+<img width="793" height="689" alt="Captura de pantalla 2026-10-11 a las 15 47 57" src="https://github.com/user-attachments/assets/052db6b7-e4cb-4c2d-a0da-ef5e242f4240" />
+
+
+SELECT 
+    first_name AS nombre,
+    COUNT(*) AS cantidad_actores
+FROM actor
+GROUP BY first_name
+ORDER BY cantidad_actores DESC, nombre ASC;
+
+42. Encuentra todos los alquileres y los nombres de los clientes que los realizaron.
+
+Unimos Rental table con JOIN Customer c ON r.customer_id = c.customer_id: Conecta cada transacción de alquiler con los datos del cliente que lo efectuó. Añado los nombres 
+
+c.first_name || ' ' || c.last_name: Concatena el nombre y el apellido del cliente en una única columna con el alias cliente.
+
+Y ordeno por rental date ORDER BY r.rental_date DESC: Ordena el historial de alquileres desde el más reciente hasta el más antiguo.
+
+SELECT 
+    r.rental_id,
+    r.rental_date,
+    r.return_date,
+    c.customer_id,
+    c.first_name || ' ' || c.last_name AS cliente
+FROM rental r
+JOIN customer c ON r.customer_id = c.customer_id
+ORDER BY r.rental_date DESC;
+
+<img width="984" height="698" alt="Captura de pantalla 2026-10-11 a las 15 58 59" src="https://github.com/user-attachments/assets/17eaac06-351a-43a7-866b-fc4fd3ba7e56" />
+
+   
+43. Muestra todos los clientes y sus alquileres si existen, incluyendo aquellos que no tienen alquileres.
+
+    
+45. Realiza un CROSS JOIN entre las tablas film y category. ¿Aporta valor
 esta consulta? ¿Por qué? Deja después de la consulta la contestación.
-45. Encuentra los actores que han participado en películas de la categoría
+46. Encuentra los actores que han participado en películas de la categoría
 'Action'.
-46. Encuentra todos los actores que no han participado en películas.
-47. Selecciona el nombre de los actores y la cantidad de películas en las
+47. Encuentra todos los actores que no han participado en películas.
+48. Selecciona el nombre de los actores y la cantidad de películas en las
 que han participado.
-48. Crea una vista llamada “actor_num_peliculas” que muestre los nombres
+49. Crea una vista llamada “actor_num_peliculas” que muestre los nombres
 de los actores y el número de películas en las que han participado.
-49. Calcula el número total de alquileres realizados por cada cliente.
-50. Calcula la duración total de las películas en la categoría 'Action'.
-51. Crea una tabla temporal llamada “cliente_rentas_temporal” para
+50. Calcula el número total de alquileres realizados por cada cliente.
+51. Calcula la duración total de las películas en la categoría 'Action'.
+52. Crea una tabla temporal llamada “cliente_rentas_temporal” para
 almacenar el total de alquileres por cliente.
-52. Crea una tabla temporal llamada “peliculas_alquiladas” que almacene las
+53. Crea una tabla temporal llamada “peliculas_alquiladas” que almacene las
 películas que han sido alquiladas al menos 10 veces.
-53. Encuentra el título de las películas que han sido alquiladas por el cliente
+54. Encuentra el título de las películas que han sido alquiladas por el cliente
 con el nombre ‘Tammy Sanders’ y que aún no se han devuelto. Ordena
 los resultados alfabéticamente por título de película.
-54. Encuentra los nombres de los actores que han actuado en al menos una
+55. Encuentra los nombres de los actores que han actuado en al menos una
 película que pertenece a la categoría ‘Sci-Fi’. Ordena los resultados
 alfabéticamente por apellido.
 DataProject: LógicaConsultasSQL 4
-55. Encuentra el nombre y apellido de los actores que han actuado en
+56. Encuentra el nombre y apellido de los actores que han actuado en
 películas que se alquilaron después de que la película ‘Spartacus
 Cheaper’ se alquilara por primera vez. Ordena los resultados
 alfabéticamente por apellido.
-56. Encuentra el nombre y apellido de los actores que no han actuado en
+57. Encuentra el nombre y apellido de los actores que no han actuado en
 ninguna película de la categoría ‘Music’.
-57. Encuentra el título de todas las películas que fueron alquiladas por más
+58. Encuentra el título de todas las películas que fueron alquiladas por más
 de 8 días.
-58. Encuentra el título de todas las películas que son de la misma categoría
+59. Encuentra el título de todas las películas que son de la misma categoría
 que ‘Animation’.
-59. Encuentra los nombres de las películas que tienen la misma duración
+60. Encuentra los nombres de las películas que tienen la misma duración
 que la película con el título ‘Dancing Fever’. Ordena los resultados
 alfabéticamente por título de película.
-60. Encuentra los nombres de los clientes que han alquilado al menos 7
+61. Encuentra los nombres de los clientes que han alquilado al menos 7
 películas distintas. Ordena los resultados alfabéticamente por apellido.
-61. Encuentra la cantidad total de películas alquiladas por categoría y
+62. Encuentra la cantidad total de películas alquiladas por categoría y
 muestra el nombre de la categoría junto con el recuento de alquileres.
-62. Encuentra el número de películas por categoría estrenadas en 2006.
-63. Obtén todas las combinaciones posibles de trabajadores con las tiendas
+63. Encuentra el número de películas por categoría estrenadas en 2006.
+64. Obtén todas las combinaciones posibles de trabajadores con las tiendas
 que tenemos.
-64. Encuentra la cantidad total de películas alquiladas por cada cliente y
+65. Encuentra la cantidad total de películas alquiladas por cada cliente y
 muestra el ID del cliente, su nombre y apellido junto con la cantidad de
 películas alquiladas.
